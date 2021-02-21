@@ -430,18 +430,19 @@ function main()
 			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
 		end
 		gamestate = sampGetGamestate()
-		if hud == 1 and gamestate == 3 then
-				
+		-- print(hud)
+		if hud == 1 then
 				while not isPlayerPlaying(PLAYER_HANDLE) do wait(0) end
 					sampTextdrawCreate(config.hp.id, '', config.hp.x, config.hp.y)
-					sampTextdrawSetString(config.hp.id, getCharHealth(PLAYER_PED))
+					sampTextdrawSetString(config.hp.id, ''..getCharHealth(PLAYER_PED))
 					sampTextdrawSetLetterSizeAndColor(config.hp.id, config.hp.SizeX, config.hp.SizeY, '0xFF'..config.hp.rgb)
 					sampTextdrawSetOutlineColor(config.hp.id, config.hp.outline, 0xFF000000)
 					sampTextdrawSetAlign(config.hp.id, 3)
 					sampTextdrawSetStyle(config.hp.id, config.hp.style)
 				if hungry == true then
+				-- print(math.floor((hun / 54.5) * 100))
 					sampTextdrawCreate(config.hungry.id, '', config.hungry.x, config.hungry.y)
-					sampTextdrawSetString(config.hp.id, math.floor((hun / 54.5) * 100))
+					sampTextdrawSetString(config.hungry.id, ''..math.floor((hun / 54.5) * 100))
 					sampTextdrawSetLetterSizeAndColor(config.hungry.id, config.hungry.SizeX, config.hungry.SizeY, '0xFF'..config.hungry.rgb)
 					sampTextdrawSetOutlineColor(config.hungry.id, config.hungry.outline, 0xFF000000)
 					sampTextdrawSetAlign(config.hungry.id, 3)
