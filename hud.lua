@@ -330,7 +330,7 @@ function main()
 		editMoneyBarSize(0.0, 0.0)
 	end
 
-	sampRegisterChatCommand('hudmenu', showHUDWindow)
+	sampRegisterChatCommand('hudmenu', showhudmenu)
 	sampSetClientCommandDescription("hudmenu", string.format(u8:decode"Открывает настройки %s, Файл: %s", thisScript().name, thisScript().filename))
 
 	while true do wait(0)
@@ -720,25 +720,14 @@ function separator(text)
 	return text
 end
 
-function sampSetChatInputCursor(start, finish) -- https://www.blast.hk/threads/13380/post-198637
-    local finish = finish or start
-    local start, finish = tonumber(start), tonumber(finish)
-    local mem = require 'memory'
-    local chatInfoPtr = sampGetInputInfoPtr()
-    local chatBoxInfo = getStructElement(chatInfoPtr, 0x8, 4)
-    mem.setint8(chatBoxInfo + 0x11E, start)
-    mem.setint8(chatBoxInfo + 0x119, finish)
-    return true
-end
-
-function showHUDWindow()
+function showhudmenu()
 	sampShowDialog(31337, '{6a5635}HUD', u8:decode'Позиция\tЗначение\n\
 	Изменить позицию/размер ХП\t[x:'..config.hp.x..' y:'..config.hp.y..'] [sX:'..config.hp.SizeX..' sY:'..config.hp.SizeY..u8:decode']\n\
 	Изменить цвет/стиль/обводку ХП\t{'..config.hp.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.hp.style..u8:decode'{FFFFFF}, Обводка: '..config.hp.outline..u8:decode'{FFFFFF}\n\
-	\nИзменить позицию/размер броня\t[x:'..config.armour.x..' y:'..config.armour.y..'] [sX:'..config.armour.SizeX..' sY:'..config.armour.SizeY..u8:decode']\n\
-	Изменить цвет/стиль/обводку броня\t{'..config.armour.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.armour.style..u8:decode'{FFFFFF}, Обводка: '..config.armour.outline..u8:decode'{FFFFFF}\n\
-	\nИзменить позицию/размер голод\t[x:'..config.hungry.x..' y:'..config.hungry.y..'] [sX:'..config.hungry.SizeX..' sY:'..config.hungry.SizeY..u8:decode']\n\
-	Изменить цвет/стиль/обводку голод\t{'..config.hungry.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.hungry.style..u8:decode'{FFFFFF}, Обводка: '..config.hungry.outline..u8:decode'{FFFFFF}\n\
+	\nИзменить позицию/размер брони\t[x:'..config.armour.x..' y:'..config.armour.y..'] [sX:'..config.armour.SizeX..' sY:'..config.armour.SizeY..u8:decode']\n\
+	Изменить цвет/стиль/обводку брони\t{'..config.armour.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.armour.style..u8:decode'{FFFFFF}, Обводка: '..config.armour.outline..u8:decode'{FFFFFF}\n\
+	\nИзменить позицию/размер голода\t[x:'..config.hungry.x..' y:'..config.hungry.y..'] [sX:'..config.hungry.SizeX..' sY:'..config.hungry.SizeY..u8:decode']\n\
+	Изменить цвет/стиль/обводку голода\t{'..config.hungry.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.hungry.style..u8:decode'{FFFFFF}, Обводка: '..config.hungry.outline..u8:decode'{FFFFFF}\n\
 	\nИзменить позицию/размер денег\t[x:'..config.money.x..' y:'..config.money.y..'] [sX:'..config.money.SizeX..' sY:'..config.money.SizeY..u8:decode']\n\
 	Изменить цвет/стиль/обводку денег\t{'..config.money.rgbplus..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.money.style..u8:decode'{FFFFFF}, Обводка: '..config.money.outline..u8:decode'{FFFFFF}\n\
 	\n'..on_off_text..u8:decode'\t\n\
