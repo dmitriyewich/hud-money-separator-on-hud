@@ -1,5 +1,4 @@
 # hud-money-separator-on-hud
-![main_screenshot](https://i.imgur.com/rGvCHvk.jpg)
 
 **Активация:** по умолчанию включено, /hudmenu
 
