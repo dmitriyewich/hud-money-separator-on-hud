@@ -459,33 +459,33 @@ function main()
 		end
 
 		if active then
-		hud = memory.getint8(0xBA6769)
-		Textdraw_posX_money, Textdraw_posY_money = sampTextdrawGetPos(config.money.id)
-		if sampTextdrawIsExists(config.money.id) and math.round(Textdraw_posY_money, 3) ~= config.money.y and math.round(Textdraw_posX_money, 3) ~= config.money.x and not posHUN and not posHP and not posARMOUR and not posMONEY then 
-			math.randomseed(os.clock())
-			config.money.id = math.random(1, 500)	
-			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-		end
-		Textdraw_posX_hp, Textdraw_posY_hp = sampTextdrawGetPos(config.hp.id)
-		if sampTextdrawIsExists(config.hp.id) and math.round(Textdraw_posX_hp, 3) ~= config.hp.x and math.round(Textdraw_posY_hp, 3) ~= config.hp.y and not posHUN and not posHP and not posARMOUR and not posMONEY then 
-			math.randomseed(os.clock())
-			config.hp.id = math.random(501, 1000)
-			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-		end
-		Textdraw_posX_armour, Textdraw_posY_armour = sampTextdrawGetPos(config.armour.id)
-		if sampTextdrawIsExists(config.armour.id) and math.round(Textdraw_posX_armour, 3) ~= config.armour.x and math.round(Textdraw_posY_armour, 3) ~= config.armour.y and not posHUN and not posHP and not posARMOUR and not posMONEY then 
-			math.randomseed(os.clock())
-			config.armour.id = math.random(1001, 1500)
-			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-		end
-		Textdraw_posX_hungry, Textdraw_posY_hungry = sampTextdrawGetPos(config.hungry.id)
-		if sampTextdrawIsExists(config.hungry.id) and math.round(Textdraw_posX_hungry, 3) ~= config.hungry.x and math.round(Textdraw_posY_hungry, 3) ~= config.hungry.y and not posHUN and not posHP and not posARMOUR and not posMONEY then 
-			math.randomseed(os.clock())
-			config.hungry.id = math.random(1501, 2304)
-			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-		end
-		gamestate = sampGetGamestate()
-		if hud == 1 then
+			hud = memory.getint8(0xBA6769)
+			Textdraw_posX_money, Textdraw_posY_money = sampTextdrawGetPos(config.money.id)
+			if sampTextdrawIsExists(config.money.id) and math.round(Textdraw_posY_money, 3) ~= config.money.y and math.round(Textdraw_posX_money, 3) ~= config.money.x and not posHUN and not posHP and not posARMOUR and not posMONEY then 
+				math.randomseed(os.clock())
+				config.money.id = math.random(1, 500)	
+				savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
+			end
+			Textdraw_posX_hp, Textdraw_posY_hp = sampTextdrawGetPos(config.hp.id)
+			if sampTextdrawIsExists(config.hp.id) and math.round(Textdraw_posX_hp, 3) ~= config.hp.x and math.round(Textdraw_posY_hp, 3) ~= config.hp.y and not posHUN and not posHP and not posARMOUR and not posMONEY then 
+				math.randomseed(os.clock())
+				config.hp.id = math.random(501, 1000)
+				savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
+			end
+			Textdraw_posX_armour, Textdraw_posY_armour = sampTextdrawGetPos(config.armour.id)
+			if sampTextdrawIsExists(config.armour.id) and math.round(Textdraw_posX_armour, 3) ~= config.armour.x and math.round(Textdraw_posY_armour, 3) ~= config.armour.y and not posHUN and not posHP and not posARMOUR and not posMONEY then 
+				math.randomseed(os.clock())
+				config.armour.id = math.random(1001, 1500)
+				savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
+			end
+			Textdraw_posX_hungry, Textdraw_posY_hungry = sampTextdrawGetPos(config.hungry.id)
+			if sampTextdrawIsExists(config.hungry.id) and math.round(Textdraw_posX_hungry, 3) ~= config.hungry.x and math.round(Textdraw_posY_hungry, 3) ~= config.hungry.y and not posHUN and not posHP and not posARMOUR and not posMONEY then 
+				math.randomseed(os.clock())
+				config.hungry.id = math.random(1501, 2304)
+				savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
+			end
+			gamestate = sampGetGamestate()
+			if hud == 1 then
 				while not isPlayerPlaying(PLAYER_HANDLE) do wait(0) end
 					sampTextdrawCreate(config.hp.id, '', config.hp.x, config.hp.y)
 					sampTextdrawSetString(config.hp.id, ''..getCharHealth(PLAYER_PED))
