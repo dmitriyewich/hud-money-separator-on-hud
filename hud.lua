@@ -399,56 +399,48 @@ function main()
 						thisScript():reload()
 					end
 				elseif sampGetCurrentDialogId() == 31338 then
-					if #input ~= 0 then
-						local rgb_hudhp, style_hudhp, outline_hudhp = string.match(input, "(.+) (.+) (.+)")
-						if rgb_hudhp ~= nil and style_hudhp ~= nil and outline_hudhp ~= nil then 
-							config.hp.rgb = rgb_hudhp
-							config.hp.style = style_hudhp
-							config.hp.outline = outline_hudhp
-							savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-						end
+					local rgb_hudhp, style_hudhp, outline_hudhp = string.match(input, "(.+) (.+) (.+)")
+					if #input ~= 0 and rgb_hudhp ~= nil and style_hudhp ~= nil and outline_hudhp ~= nil then
+						config.hp.rgb = rgb_hudhp
+						config.hp.style = style_hudhp
+						config.hp.outline = outline_hudhp
+						savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
 					else
 						msg_error()
 						sampShowDialog(31338, u8:decode'{6a5635}HUD // Установка цвета/стиля/обводки', u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
 						sampSetCurrentDialogEditboxText(config.hp.rgb..' '..config.hp.style..' '..config.hp.outline)
 					end
 				elseif sampGetCurrentDialogId() == 31339 then
-					if #input ~= 0 then
-						local rgb_hudar, style_hudar, outline_hudar = string.match(input, "(.+) (.+) (.+)")
-						if rgb_hudar ~= nil and style_hudar ~= nil and outline_hudar ~= nil then 
-							config.armour.rgb = rgb_hudar
-							config.armour.style = style_hudar
-							config.armour.outline = outline_hudar
-							savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-						end
+					local rgb_hudar, style_hudar, outline_hudar = string.match(input, "(.+) (.+) (.+)")
+					if #input ~= 0 and rgb_hudar ~= nil and style_hudar ~= nil and outline_hudar ~= nil then
+						config.armour.rgb = rgb_hudar
+						config.armour.style = style_hudar
+						config.armour.outline = outline_hudar
+						savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
 					else
 						msg_error()
 						sampShowDialog(31339, u8:decode'{6a5635}HUD // Установка цвета/стиля/обводки', u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
 						sampSetCurrentDialogEditboxText(config.armour.rgb..' '..config.armour.style..' '..config.armour.outline)
 					end
 				elseif sampGetCurrentDialogId() == 31340 then
-					if #input ~= 0 then
-						local rgb_hudhun, style_hudhun, outline_hudhun = string.match(input, "(.+) (.+) (.+)")
-						if rgb_hudhun ~= nil and style_hudhun ~= nil and outline_hudhun ~= nil then 
-							config.hungry.rgb = rgb_hudhun
-							config.hungry.style = style_hudhun
-							config.hungry.outline = outline_hudhun
-							savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-						end
+					local rgb_hudhun, style_hudhun, outline_hudhun = string.match(input, "(.+) (.+) (.+)")
+					if #input ~= 0 and rgb_hudhun ~= nil and style_hudhun ~= nil and outline_hudhun ~= nil then
+						config.hungry.rgb = rgb_hudhun
+						config.hungry.style = style_hudhun
+						config.hungry.outline = outline_hudhun
+						savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
 					else
 						msg_error()
 						sampShowDialog(31340, u8:decode'{6a5635}HUD // Установка цвета/стиля/обводки', u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
 						sampSetCurrentDialogEditboxText(config.hungry.rgb..' '..config.hungry.style..' '..config.hungry.outline)
 					end
 				elseif sampGetCurrentDialogId() == 31341 then
-					if #input ~= 0 then 
-						local rgb_hudmoney, style_hudmoney, outline_hudmoney = string.match(arg, "(.+) (.+) (.+)")
-						if rgb_hudmoney ~= nil and style_hudmoney ~= nil and outline_hudmoney ~= nil then 
-							config.money.rgbplus = rgb_hudmoney
-							config.money.style = style_hudmoney
-							config.money.outline = outline_hudmoney
-							savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-						end
+					local rgb_hudmoney, style_hudmoney, outline_hudmoney = string.match(arg, "(.+) (.+) (.+)")
+					if #input ~= 0 and rgb_hudmoney ~= nil and style_hudmoney ~= nil and outline_hudmoney ~= nil then 
+						config.money.rgbplus = rgb_hudmoney
+						config.money.style = style_hudmoney
+						config.money.outline = outline_hudmoney
+						savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
 					else
 						msg_error()
 						sampShowDialog(31341, u8:decode'{6a5635}HUD // Установка цвета/стиля/обводки', u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
@@ -481,7 +473,7 @@ function main()
 			Textdraw_posX_hungry, Textdraw_posY_hungry = sampTextdrawGetPos(config.hungry.id)
 			if sampTextdrawIsExists(config.hungry.id) and math.round(Textdraw_posX_hungry, 3) ~= config.hungry.x and math.round(Textdraw_posY_hungry, 3) ~= config.hungry.y and not posHUN and not posHP and not posARMOUR and not posMONEY then 
 				math.randomseed(os.clock())
-				config.hungry.id = math.random(1501, 2304)
+				config.hungry.id = math.random(1501, 2303)
 				savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
 			end
 			gamestate = sampGetGamestate()
@@ -658,7 +650,7 @@ function main()
 	end
 end
 
-math.round = function(num, idp)
+function math.round(num, idp)
   local mult = 10^(idp or 0)
   return math.floor(num * mult + 0.5) / mult
 end
