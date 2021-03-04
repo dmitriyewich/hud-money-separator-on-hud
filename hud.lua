@@ -4,8 +4,7 @@ script_description("Regular numbers on hud + seperator of money in dots on hud."
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys")
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.4")
-script_version_number(14)
+script_version("1.5")
 
 require 'lib.moonloader'
 local lmemory, memory = pcall(require, 'memory') assert(lmemory, 'Library \'memory\' not found.')
@@ -209,15 +208,16 @@ local function neatJSON(value, opts) -- by Phrogz
 	return build(value,'')
 end
 
-
 function savejson(table, path)
     local f = io.open(path, "w")
     f:write(table)
     f:close()
 end
+
 function convertTableToJsonString(config)
     return (neatJSON(config, {sort = true, wrap = 40}))
 end 
+
 local config = {}
 
 if doesFileExist("moonloader/config/hud.json") then
@@ -302,7 +302,7 @@ local servers = { -- список серверов, где работает
 	['185.169.134.174'] = true -- Payson
 }
 
-local on_off_text = ''
+local on_off_text = (active and u8:decode'Включить HUD' or u8:decode'Выключить HUD')
 
 local active=true
 hun = 54.5
@@ -330,79 +330,134 @@ function main()
 		editMoneyBarSize(0.0, 0.0)
 	end
 
-    sampRegisterChatCommand("hudmenu", function()
-		lua_thread.create(function()
-			wait(74)
-			click_true = not click_true
-		end)
-    end)
+	sampRegisterChatCommand('hudmenu', showHUDWindow)
 	sampSetClientCommandDescription("hudmenu", string.format(u8:decode"Открывает настройки %s, Файл: %s", thisScript().name, thisScript().filename))
-    sampRegisterChatCommand("hudhp", function(arg)
-		local rgb_hudhp, style_hudhp, outline_hudhp = string.match(arg, "(.+) (.+) (.+)")
-		if rgb_hudhp == nil and style_hudhp == nil and outline_hudhp == nil then 
-			msg_rso()
-			lua_thread.create(function()
-			wait(74)
-			sampSetChatInputText('/hudhp '..config.hp.rgb..' '..config.hp.style..' '..config.hp.outline)
-			sampSetChatInputEnabled(true)
-			end)
-		elseif rgb_hudhp ~= nil and style_hudhp ~= nil and outline_hudhp ~= nil then 
-			config.hp.rgb = rgb_hudhp
-			config.hp.style = style_hudhp
-			config.hp.outline = outline_hudhp
-			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-		end
-    end)
-    sampRegisterChatCommand("hudar", function(arg)
-		local rgb_hudar, style_hudar, outline_hudar = string.match(arg, "(.+) (.+) (.+)")
-		if rgb_hudar == nil and style_hudar == nil and outline_hudar == nil then 
-			msg_rso()
-			lua_thread.create(function()
-			wait(74)
-			sampSetChatInputText('/hudar '..config.armour.rgb..' '..config.armour.style..' '..config.armour.outline)
-			sampSetChatInputEnabled(true)
-			end)
-		elseif rgb_hudar ~= nil and style_hudar ~= nil and outline_hudar ~= nil then 
-			config.armour.rgb = rgb_hudar
-			config.armour.style = style_hudar
-			config.armour.outline = outline_hudar
-			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-		end
-    end)
-    sampRegisterChatCommand("hudmoney", function(arg)
-		local rgb_hudmoney, style_hudmoney, outline_hudmoney = string.match(arg, "(.+) (.+) (.+)")
-		if rgb_hudmoney == nil and style_hudmoney == nil and outline_hudmoney == nil then 
-			msg_rso()
-			lua_thread.create(function()
-			wait(74)
-			sampSetChatInputText('/hudhp '..config.money.rgbplus..' '..config.money.style..' '..config.money.outline)
-			sampSetChatInputEnabled(true)
-			end)
-		elseif rgb_hudmoney ~= nil and style_hudmoney ~= nil and outline_hudmoney ~= nil then 
-			config.money.rgbplus = rgb_hudmoney
-			config.money.style = style_hudmoney
-			config.money.outline = outline_hudmoney
-			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-		end
-    end)
-    sampRegisterChatCommand("hudhun", function(arg)
-		local rgb_hudhun, style_hudhun, outline_hudhun = string.match(arg, "(.+) (.+) (.+)")
-		if rgb_hudhun == nil and style_hudhun == nil and outline_hudhun == nil then 
-			msg_rso()
-			lua_thread.create(function()
-			wait(74)
-			sampSetChatInputText('/hudhp '..config.hungry.rgb..' '..config.hungry.style..' '..config.hungry.outline)
-			sampSetChatInputEnabled(true)
-			end)
-		elseif rgb_hudhun ~= nil and style_hudhun ~= nil and outline_hudhun ~= nil then 
-			config.hungry.rgb = rgb_hudhun
-			config.hungry.style = style_hudhun
-			config.hungry.outline = outline_hudhun
-			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
-		end
-    end)
 
 	while true do wait(0)
+		if sampIsDialogClientside() then
+			local result, button, list, input = sampHasDialogRespond(sampGetCurrentDialogId())
+			if result and button == 1 then
+				if sampGetCurrentDialogId() == 31337 then
+					if list == 0 then
+						lua_thread.create(function()
+							msg_settings()
+							wait(74)
+							lockPlayerControl(true)
+							sampSetCursorMode(3)
+							posHP = true
+						end)
+					elseif list == 1 then
+						sampShowDialog(31338, u8:decode'{'..config.hp.rgb..u8:decode'}HUD {FFFFFF}// Текущее значение: {'..config.hp.rgb..u8:decode'}Цвет:{FFFFFF} '..config.hp.rgb..u8:decode', Стиль: '..config.hp.style..u8:decode', Обводка: '..config.hp.outline, u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampSetCurrentDialogEditboxText(config.hp.rgb..' '..config.hp.style..' '..config.hp.outline)
+					elseif list == 3 then
+						lua_thread.create(function()
+							msg_settings()
+							wait(74)
+							sampSetCursorMode(3)
+							lockPlayerControl(true)
+							posARMOUR = true
+						end)
+					elseif list == 4 then
+						sampShowDialog(31349, u8:decode'{'..config.armour.rgb..u8:decode'}HUD {FFFFFF}// Текущее значение: {'..config.armour.rgb..u8:decode'}Цвет:{FFFFFF} '..config.armour.rgb..u8:decode', Стиль: '..config.armour.style..u8:decode', Обводка: '..config.armour.outline, u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampSetCurrentDialogEditboxText(config.armour.rgb..' '..config.armour.style..' '..config.armour.outline)
+					elseif list == 6 then
+						lua_thread.create(function()
+							msg_settings()
+							wait(74)
+							sampSetCursorMode(3)
+							lockPlayerControl(true)
+							posHUN = true
+						end)
+					elseif list == 7 then
+						sampShowDialog(31340, u8:decode'{'..config.hungry.rgb..u8:decode'}HUD {FFFFFF}// Текущее значение: {'..config.hungry.rgb..u8:decode'}Цвет:{FFFFFF} '..config.hungry.rgb..u8:decode', Стиль: '..config.hungry.style..u8:decode', Обводка: '..config.hungry.outline, u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampSetCurrentDialogEditboxText(config.hungry.rgb..' '..config.hungry.style..' '..config.hungry.outline)
+					elseif list == 9 then
+						lua_thread.create(function()
+							msg_settings()
+							wait(74)
+							sampSetCursorMode(3)
+							lockPlayerControl(true)
+							posMONEY = true
+						end)
+					elseif list == 10 then
+						sampShowDialog(31340, u8:decode'{'..config.money.rgbplus..u8:decode'}HUD {FFFFFF}// Текущее значение: {'..config.money.rgbplus..u8:decode'}Цвет:{FFFFFF} '..config.money.rgb..u8:decode', Стиль: '..config.money.style..u8:decode', Обводка: '..config.money.outline, u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampSetCurrentDialogEditboxText(config.money.rgbplus..' '..config.money.style..' '..config.money.outline)
+					elseif list == 12 then				
+						active = not active
+						if active then
+							editMoneyBarSize(0.0, 0.0)
+							on_off_text = u8:decode'Выключить HUD'
+						else
+							on_off_text = u8:decode'Включить HUD'
+							editMoneyBarSize(0.55, 1.1)
+							sampTextdrawDelete(config.money.id)
+							sampTextdrawDelete(config.hp.id)
+							sampTextdrawDelete(config.armour.id)
+							sampTextdrawDelete(config.hungry.id)
+						end
+					elseif list == 13 then				
+						thisScript():reload()
+					end
+				elseif sampGetCurrentDialogId() == 31338 then
+					if #input ~= 0 then
+						local rgb_hudhp, style_hudhp, outline_hudhp = string.match(input, "(.+) (.+) (.+)")
+						if rgb_hudhp ~= nil and style_hudhp ~= nil and outline_hudhp ~= nil then 
+							config.hp.rgb = rgb_hudhp
+							config.hp.style = style_hudhp
+							config.hp.outline = outline_hudhp
+							savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
+						end
+					else
+						msg_error()
+						sampShowDialog(31338, u8:decode'{6a5635}HUD // Установка цвета/стиля/обводки', u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampSetCurrentDialogEditboxText(config.hp.rgb..' '..config.hp.style..' '..config.hp.outline)
+					end
+				elseif sampGetCurrentDialogId() == 31339 then
+					if #input ~= 0 then
+						local rgb_hudar, style_hudar, outline_hudar = string.match(input, "(.+) (.+) (.+)")
+						if rgb_hudar ~= nil and style_hudar ~= nil and outline_hudar ~= nil then 
+							config.armour.rgb = rgb_hudar
+							config.armour.style = style_hudar
+							config.armour.outline = outline_hudar
+							savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
+						end
+					else
+						msg_error()
+						sampShowDialog(31339, u8:decode'{6a5635}HUD // Установка цвета/стиля/обводки', u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampSetCurrentDialogEditboxText(config.armour.rgb..' '..config.armour.style..' '..config.armour.outline)
+					end
+				elseif sampGetCurrentDialogId() == 31340 then
+					if #input ~= 0 then
+						local rgb_hudhun, style_hudhun, outline_hudhun = string.match(input, "(.+) (.+) (.+)")
+						if rgb_hudhun ~= nil and style_hudhun ~= nil and outline_hudhun ~= nil then 
+							config.hungry.rgb = rgb_hudhun
+							config.hungry.style = style_hudhun
+							config.hungry.outline = outline_hudhun
+							savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
+						end
+					else
+						msg_error()
+						sampShowDialog(31340, u8:decode'{6a5635}HUD // Установка цвета/стиля/обводки', u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampSetCurrentDialogEditboxText(config.hungry.rgb..' '..config.hungry.style..' '..config.hungry.outline)
+					end
+				elseif sampGetCurrentDialogId() == 31341 then
+					if #input ~= 0 then 
+						local rgb_hudmoney, style_hudmoney, outline_hudmoney = string.match(arg, "(.+) (.+) (.+)")
+						if rgb_hudmoney ~= nil and style_hudmoney ~= nil and outline_hudmoney ~= nil then 
+							config.money.rgbplus = rgb_hudmoney
+							config.money.style = style_hudmoney
+							config.money.outline = outline_hudmoney
+							savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
+						end
+					else
+						msg_error()
+						sampShowDialog(31341, u8:decode'{6a5635}HUD // Установка цвета/стиля/обводки', u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampSetCurrentDialogEditboxText(config.money.rgbplus..' '..config.money.style..' '..config.money.outline)
+					end
+				end
+			end
+		end
+
 		if active then
 		hud = memory.getint8(0xBA6769)
 		Textdraw_posX_money, Textdraw_posY_money = sampTextdrawGetPos(config.money.id)
@@ -430,7 +485,6 @@ function main()
 			savejson(convertTableToJsonString(config), "moonloader/config/hud.json")
 		end
 		gamestate = sampGetGamestate()
-		-- print(hud)
 		if hud == 1 then
 				while not isPlayerPlaying(PLAYER_HANDLE) do wait(0) end
 					sampTextdrawCreate(config.hp.id, '', config.hp.x, config.hp.y)
@@ -440,7 +494,6 @@ function main()
 					sampTextdrawSetAlign(config.hp.id, 3)
 					sampTextdrawSetStyle(config.hp.id, config.hp.style)
 				if hungry == true then
-				-- print(math.floor((hun / 54.5) * 100))
 					sampTextdrawCreate(config.hungry.id, '', config.hungry.x, config.hungry.y)
 					sampTextdrawSetString(config.hungry.id, ''..math.floor((hun / 54.5) * 100))
 					sampTextdrawSetLetterSizeAndColor(config.hungry.id, config.hungry.SizeX, config.hungry.SizeY, '0xFF'..config.hungry.rgb)
@@ -473,13 +526,12 @@ function main()
 					sampTextdrawSetAlign(config.money.id, 3)
 					sampTextdrawSetStyle(config.money.id, config.money.style)
 				end
-			else --if hud ~= 1 and 
+			else
 				sampTextdrawDelete(config.money.id)
 				sampTextdrawDelete(config.hp.id)
 				sampTextdrawDelete(config.armour.id)
 				sampTextdrawDelete(config.hungry.id)
 			end
-
 			if posHUN then
 				local int_posX, int_posY = getCursorPos()
 				local gposX, gposY = convertWindowScreenCoordsToGameScreenCoords(int_posX, int_posY)
@@ -593,203 +645,6 @@ function main()
 				end
 			end
 		end
-		if click_true then
-			sampSetCursorMode(3)
-			control = true
-			local HP_pos = click(font, u8:decode'Изменить позицию/размер ХП', (resX - renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер ХП')) / 2, resY / 2 + 25, '0xFFAAAAAA')
-			if HP_pos == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_settings()
-					wait(74)
-					lockPlayerControl(true)
-					sampSetCursorMode(3)
-					posHP = true
-				end)
-			end
-			local HP_color = click(font, u8:decode'[Цвет]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Цвет]')) / 2 + (renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер ХП') / 2.4), resY / 2 + 25, '0xAA'..config.hp.rgb)
-			if HP_color == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudhp '..config.hp.rgb..' '..config.hp.style..' '..config.hp.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(7, 13)
-				end)
-			end
-			local HP_style = click(font, u8:decode'[Стиль]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Стиль]')) / 2 + ((renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер ХП') + (renderGetFontDrawTextLength(font, u8:decode'[Цвет]'))) / 1.99), resY / 2 + 25, '0xAA'..config.hp.rgb)
-			if HP_style == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudhp '..config.hp.rgb..' '..config.hp.style..' '..config.hp.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(14, 15)
-				end)
-			end
-			local HP_outline = click(font, u8:decode'[Обводка]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Стиль]')) / 2 + ((renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер ХП') + (renderGetFontDrawTextLength(font, u8:decode'[Цвет]') + (renderGetFontDrawTextLength(font, u8:decode'[Стиль]')))) / 1.7), resY / 2 + 25, '0xAA'..config.hp.rgb)
-			if HP_outline == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudhp '..config.hp.rgb..' '..config.hp.style..' '..config.hp.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(16, string.len(sampGetChatInputText()))
-				end)
-			end
-			local ARMOUR_pos = click(font, u8:decode'Изменить позицию/размер брони', (resX - renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер брони')) / 2, resY / 2, '0xFFAAAAAA')
-			if ARMOUR_pos == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_settings()
-					wait(74)
-					sampSetCursorMode(3)
-					lockPlayerControl(true)
-					posARMOUR = true
-				end)
-			end
-			local ARMOUR_color = click(font, u8:decode'[Цвет]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Цвет]')) / 2 + (renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер брони') / 2.4), resY / 2, '0xAA'..config.armour.rgb)
-			if ARMOUR_color == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudar '..config.armour.rgb..' '..config.armour.style..' '..config.armour.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(7, 13)
-				end)
-			end
-			local ARMOUR_style = click(font, u8:decode'[Стиль]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Стиль]')) / 2 + ((renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер ХП') + (renderGetFontDrawTextLength(font, u8:decode'[Цвет]'))) / 1.85), resY / 2, '0xAA'..config.armour.rgb)
-			if ARMOUR_style == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudar '..config.armour.rgb..' '..config.armour.style..' '..config.armour.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(14, 15)
-				end)
-			end
-			local ARMOUR_outline = click(font, u8:decode'[Обводка]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Стиль]')) / 2 + ((renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер ХП') + (renderGetFontDrawTextLength(font, u8:decode'[Цвет]') + (renderGetFontDrawTextLength(font, u8:decode'[Стиль]')))) / 1.62), resY / 2, '0xAA'..config.armour.rgb)
-			if ARMOUR_outline == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudar '..config.armour.rgb..' '..config.armour.style..' '..config.armour.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(16, string.len(sampGetChatInputText()))
-				end)
-			end
-			local MONEY_pos = click(font, u8:decode'Изменить позицию/размер денег', (resX - renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер денег')) / 2, resY / 2 - 25, '0xFFAAAAAA')
-			if MONEY_pos == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_settings()
-					wait(74)
-					lockPlayerControl(true)
-					sampSetCursorMode(3)
-					posMONEY = true
-				end)
-			end
-			local MONEY_color = click(font, u8:decode'[Цвет]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Цвет]')) / 2 + (renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер денег') / 2.4), resY / 2 - 25, '0xAA'..config.money.rgbplus)
-			if MONEY_color == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudmoney '..config.money.rgbplus..' '..config.money.style..' '..config.money.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(10, 16)
-				end)
-			end
-			local MONEY_style = click(font, u8:decode'[Стиль]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Стиль]')) / 2 + ((renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер денег') + (renderGetFontDrawTextLength(font, u8:decode'[Цвет]'))) / 1.99), resY / 2 - 25, '0xAA'..config.money.rgbplus)
-			if MONEY_style == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudmoney '..config.money.rgbplus..' '..config.money.style..' '..config.money.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(14, 15)
-				end)
-			end
-			local MONEY_outline = click(font, u8:decode'[Обводка]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Стиль]')) / 2 + ((renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер денег') + (renderGetFontDrawTextLength(font, u8:decode'[Цвет]') + (renderGetFontDrawTextLength(font, u8:decode'[Стиль]')))) / 1.71), resY / 2 - 25, '0xAA'..config.money.rgbplus)
-			if MONEY_outline == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudmoney '..config.money.rgbplus..' '..config.money.style..' '..config.money.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(16, string.len(sampGetChatInputText()))
-				end)
-			end
-			if hungry then
-			local HUN_pos = click(font, u8:decode'Изменить позицию/размер сытости', (resX - renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер сытости')) / 2, resY / 2 - 50, '0xFFAAAAAA')
-			if HUN_pos == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_settings()
-					wait(74)
-					lockPlayerControl(true)
-					sampSetCursorMode(3)
-					posHUN = true
-				end)
-			end
-			local HUN_color = click(font, u8:decode'[Цвет]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Цвет]')) / 2 + (renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер сытости') / 2.4), resY / 2 - 50, '0xAA'..config.hungry.rgb)
-			if HUN_color == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudhun '..config.hungry.rgb..' '..config.hungry.style..' '..config.hungry.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(8, 14)
-				end)
-			end
-			local HUN_style = click(font, u8:decode'[Стиль]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Стиль]')) / 2 + ((renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер сытости') + (renderGetFontDrawTextLength(font, u8:decode'[Цвет]'))) / 1.99), resY / 2 - 50, '0xAA'..config.hungry.rgb)
-			if HUN_style == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudhun '..config.hungry.rgb..' '..config.hungry.style..' '..config.hungry.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(14, 15)
-				end)
-			end
-			local HUN_outline = click(font, u8:decode'[Обводка]', (resX + renderGetFontDrawTextLength(font, u8:decode'[Стиль]')) / 2 + ((renderGetFontDrawTextLength(font, u8:decode'Изменить позицию/размер сытости') + (renderGetFontDrawTextLength(font, u8:decode'[Цвет]') + (renderGetFontDrawTextLength(font, u8:decode'[Стиль]')))) / 1.71), resY / 2 - 50, '0xAA'..config.hungry.rgb)
-			if HUN_outline == 2 then
-				lua_thread.create(function()
-					click_true = false
-					msg_rso()
-					sampSetChatInputText('/hudhun '..config.hungry.rgb..' '..config.hungry.style..' '..config.hungry.outline)
-					sampSetChatInputEnabled(true)
-					sampSetChatInputCursor(16, string.len(sampGetChatInputText()))
-				end)
-			end
-			end
-			local reload_this = click(font, u8:decode'Перезапустить скрипт', (resX - renderGetFontDrawTextLength(font, u8:decode'Перезапустить скрипт')) / 2, resY / 2 - 75, '0xFFAAAAAA')
-			if reload_this == 2 then
-				thisScript():reload()
-			end
-			if active then
-				on_off_text = u8:decode'Выключить HUD'
-			else
-				on_off_text = u8:decode'Включить HUD'
-			end	
-			local on_off = click(font, on_off_text, (resX - renderGetFontDrawTextLength(font, on_off_text)) / 2, resY / 2 - 100, '0xFFAAAAAA')
-			if on_off == 2 then
-				active = not active
-				if active then
-					editMoneyBarSize(0.0, 0.0)
-				else
-					editMoneyBarSize(0.55, 1.1)
-					sampTextdrawDelete(config.money.id)
-					sampTextdrawDelete(config.hp.id)
-					sampTextdrawDelete(config.armour.id)
-					sampTextdrawDelete(config.hungry.id)
-				end
-			end
-		end
-		if control and wasKeyPressed(key.VK_ESCAPE) then
-			control = false
-			click_true = false
-			sampSetCursorMode(0)
-		end
 		if files ~= nil then  -- by FYP
 			for fpath, saved_time in pairs(files) do
 				local file_time = get_file_modify_time(fpath)
@@ -847,24 +702,13 @@ function msg_settings()
 	sampAddChatMessage(u8:decode"Позиция {ff6666}Мышь{ffffff}.", -1)
 	sampAddChatMessage(u8:decode"Для сохранения настроек нажмите {ff6666}Enter{ffffff}.", -1)
 end
-function msg_rso()
-sampAddChatMessage(u8:decode'Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки', -1)
+
+function msg_error()
+	sampAddChatMessage(u8:decode'Упс, что-то введено неверно.', -1)
 end
-function click(font, text, posX, posY, color)
-	renderFontDrawText(font, text, posX, posY, color)
-	local textLenght = renderGetFontDrawTextLength(font, text)
-	local textHeight = renderGetFontDrawHeight(font)
-	local curX, curY = getCursorPos()
-	if curX >= posX and curX <= posX + textLenght and curY >= posY and curY <= posY + textHeight then
-		renderFontDrawText(font, text, posX, posY, '0xFFFFFFFF')
-		if isKeyJustPressed(1) then
-			return 2
-		else
-			return 1
-		end
-	else
-		return 0
-	end
+
+function msg_rso()
+	sampAddChatMessage(u8:decode'Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки', -1)
 end
 
 local point = '.'
@@ -876,11 +720,11 @@ function comma_value(n)
 end
 
 function separator(text)
-		for S in string.gmatch(text, "%d+") do
-			S = string.sub(S, 0, #S)
-	    	local replace = comma_value(S)
-	    	text = string.gsub(text, S, replace)
-	    end
+	for S in string.gmatch(text, "%d+") do
+		S = string.sub(S, 0, #S)
+    	local replace = comma_value(S)
+	   	text = string.gsub(text, S, replace)
+    end
 	return text
 end
 
@@ -893,6 +737,20 @@ function sampSetChatInputCursor(start, finish) -- https://www.blast.hk/threads/1
     mem.setint8(chatBoxInfo + 0x11E, start)
     mem.setint8(chatBoxInfo + 0x119, finish)
     return true
+end
+
+function showHUDWindow()
+	sampShowDialog(31337, '{6a5635}HUD', u8:decode'Наименование позиции\tЗначение\n\
+	Изменить позицию/размер ХП\t[x:'..config.hp.x..' y:'..config.hp.y..'] [sX:'..config.hp.SizeX..' sY:'..config.hp.SizeY..u8:decode']\n\
+	Изменить цвет/стиль/обводку ХП\t{'..config.hp.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.hp.style..u8:decode'{FFFFFF}, Обводка: '..config.hp.outline..u8:decode'{FFFFFF}\n\
+	\nИзменить позицию/размер броня\t[x:'..config.armour.x..' y:'..config.armour.y..'] [sX:'..config.armour.SizeX..' sY:'..config.armour.SizeY..u8:decode']\n\
+	Изменить цвет/стиль/обводку броня\t{'..config.armour.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.armour.style..u8:decode'{FFFFFF}, Обводка: '..config.armour.outline..u8:decode'{FFFFFF}\n\
+	\nИзменить позицию/размер голод\t[x:'..config.hungry.x..' y:'..config.hungry.y..'] [sX:'..config.hungry.SizeX..' sY:'..config.hungry.SizeY..u8:decode']\n\
+	Изменить цвет/стиль/обводку голод\t{'..config.hungry.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.hungry.style..u8:decode'{FFFFFF}, Обводка: '..config.hungry.outline..u8:decode'{FFFFFF}\n\
+	\nИзменить позицию/размер денег\t[x:'..config.money.x..' y:'..config.money.y..'] [sX:'..config.money.SizeX..' sY:'..config.money.SizeY..u8:decode']\n\
+	Изменить цвет/стиль/обводку денег\t{'..config.money.rgbplus..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.money.style..u8:decode'{FFFFFF}, Обводка: '..config.money.outline..u8:decode'{FFFFFF}\n\
+	\n'..on_off_text..u8:decode'\t\n\
+	Перезагрузка скрипта', u8:decode'Выбрать', u8:decode'Закрыть', 5)
 end
 
 function onReceiveRpc(id,bs) -- trefa
@@ -913,15 +771,11 @@ end
 
 function onScriptTerminate(s, quitGame)
 	if s == thisScript() and not quitGame then
-		if active then
-			editMoneyBarSize(0.0, 0.0)
-			sampTextdrawDelete(config.money.id)
-			sampTextdrawDelete(config.hp.id)
-			sampTextdrawDelete(config.armour.id)
-			sampTextdrawDelete(config.hungry.id)
-			else
-			editMoneyBarSize(0.55, 1.1)
-		end
+		sampTextdrawDelete(config.money.id)
+		sampTextdrawDelete(config.hp.id)
+		sampTextdrawDelete(config.armour.id)
+		sampTextdrawDelete(config.hungry.id)
+		editMoneyBarSize(0.55, 1.1)
 		sampSetCursorMode(0)
     end
 end
