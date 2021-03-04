@@ -732,7 +732,7 @@ function sampSetChatInputCursor(start, finish) -- https://www.blast.hk/threads/1
 end
 
 function showHUDWindow()
-	sampShowDialog(31337, '{6a5635}HUD', u8:decode'Наименование позиции\tЗначение\n\
+	sampShowDialog(31337, '{6a5635}HUD', u8:decode'Позиция\tЗначение\n\
 	Изменить позицию/размер ХП\t[x:'..config.hp.x..' y:'..config.hp.y..'] [sX:'..config.hp.SizeX..' sY:'..config.hp.SizeY..u8:decode']\n\
 	Изменить цвет/стиль/обводку ХП\t{'..config.hp.rgb..u8:decode'}Цвет{FFFFFF}, Стиль: '..config.hp.style..u8:decode'{FFFFFF}, Обводка: '..config.hp.outline..u8:decode'{FFFFFF}\n\
 	\nИзменить позицию/размер броня\t[x:'..config.armour.x..' y:'..config.armour.y..'] [sX:'..config.armour.SizeX..' sY:'..config.armour.SizeY..u8:decode']\n\
