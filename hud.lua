@@ -358,7 +358,7 @@ function main()
 							posARMOUR = true
 						end)
 					elseif list == 4 then
-						sampShowDialog(31349, u8:decode'{'..config.armour.rgb..u8:decode'}HUD {FFFFFF}// Текущее значение: {'..config.armour.rgb..u8:decode'}Цвет:{FFFFFF} '..config.armour.rgb..u8:decode', Стиль: '..config.armour.style..u8:decode', Обводка: '..config.armour.outline, u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampShowDialog(31339, u8:decode'{'..config.armour.rgb..u8:decode'}HUD {FFFFFF}// Текущее значение: {'..config.armour.rgb..u8:decode'}Цвет:{FFFFFF} '..config.armour.rgb..u8:decode', Стиль: '..config.armour.style..u8:decode', Обводка: '..config.armour.outline, u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
 						sampSetCurrentDialogEditboxText(config.armour.rgb..' '..config.armour.style..' '..config.armour.outline)
 					elseif list == 6 then
 						lua_thread.create(function()
@@ -380,7 +380,7 @@ function main()
 							posMONEY = true
 						end)
 					elseif list == 10 then
-						sampShowDialog(31340, u8:decode'{'..config.money.rgbplus..u8:decode'}HUD {FFFFFF}// Текущее значение: {'..config.money.rgbplus..u8:decode'}Цвет:{FFFFFF} '..config.money.rgb..u8:decode', Стиль: '..config.money.style..u8:decode', Обводка: '..config.money.outline, u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
+						sampShowDialog(31341, u8:decode'{'..config.money.rgbplus..u8:decode'}HUD {FFFFFF}// Текущее значение: {'..config.money.rgbplus..u8:decode'}Цвет:{FFFFFF} '..config.money.rgb..u8:decode', Стиль: '..config.money.style..u8:decode', Обводка: '..config.money.outline, u8:decode'{FFFFFF}Введите цвет в формате {ff0000}R{00ff00}G{0000ff}B{FFFFFF}, Стиль(1-3), Размер обводки.', u8:decode'{7FC4FF}Сохранить', u8:decode'{FA7E75}Закрыть', 1)
 						sampSetCurrentDialogEditboxText(config.money.rgbplus..' '..config.money.style..' '..config.money.outline)
 					elseif list == 12 then				
 						active = not active
