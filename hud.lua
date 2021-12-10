@@ -4,7 +4,7 @@ script_description("numbers on hud + seperator dot  on money on hud.")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "encoding")
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("2.0")
+script_version("2.0.1")
 
 require 'lib.moonloader'
 local lmemory, memory = pcall(require, 'memory')
@@ -356,7 +356,9 @@ function main()
 
 		if active then
 			local hud = memory.getint8(0xBA6769)
-			if hud == 1 and hud_test and not hasCutsceneLoaded() then
+			local radar = memory.getint8(0xBA6769)
+			local radar2 = memory.getint8(0xBAA3FB)
+			if hud == 1 and hud == 1 and radar == 1 and not isPauseMenuActive() and hud_test and not hasCutsceneLoaded() and radar2 == 0 then
 				if memory.tohex(0x58F47D, 2, false) ~= "90E9" then
 					memory.hex2bin('90E9', 0x58F47D, 2) -- OFF MONEY
 				end
