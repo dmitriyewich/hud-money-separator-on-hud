@@ -346,12 +346,12 @@ function main()
 
 		if samp == 0 or samp == 1 then
 			if testCheat("HUD") then on = not on end
-			if samp == 1 then hud_test = samp_connect_test() end -- test
+			if samp == 1 then hud_test = fixed_camera_to_skin() end -- test
 		end
 
 		if samp == 2 then
 			-- if sampGetGamestate() == 3 then active = true else active = false end
-			hud_test = samp_connect_test()
+			hud_test = fixed_camera_to_skin()
 		end
 
 		if active then
@@ -543,12 +543,8 @@ function setText(sX, sY, font, align, ARGB, sO, sARGB, wrapx, centresize, backgr
 	setTextDrawBeforeFade(drawbeforefade) -- bool
 end
 
-function samp_connect_test()
-	local gta_sa = getModuleHandle('gta_sa.exe')
-	local hud1 = memory.read(gta_sa + 0x76F053, 1, false)
-	if hud1 >= 1 then
-		return true
-	end
+function fixed_camera_to_skin() -- проверка на приклепление камеры к скину
+	return (memory.read(getModuleHandle('gta_sa.exe') + 0x76F053, 1, false) >= 1 and true or false)
 end
 
 function onReceiveRpc(id,bs) -- trefa
